@@ -28,7 +28,7 @@ resource "docker_container" "runner" {
   }
 
   provisioner "local-exec" {
-    command = "docker exec $ID gitlab-runner register --non-interactive --url https://gitlab.com --registration-token $TOKEN --name $NAME --executor docker --docker-image alpine:latest"
+    command = "docker exec $ID gitlab-runner register --non-interactive --url https://gitlab.com --registration-token $TOKEN --name $NAME --executor docker --docker-image alpine:latest --docker-privileged --docker-volumes \"/certs/client\""
     environment = {
       ID =  self.id
       TOKEN = each.key
