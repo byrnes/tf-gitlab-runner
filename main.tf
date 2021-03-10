@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     docker = {
-      source = "kreuzwerker/docker"
+      source  = "kreuzwerker/docker"
       version = "2.11.0"
     }
   }
@@ -18,37 +18,37 @@ provider "docker" {
 # Create a container
 resource "docker_container" "runner" {
   for_each = var.registration_tokens
-  image = docker_image.gitlab-runner.latest
-  name  = uuid()
-   
+  image    = docker_image.gitlab-runner.latest
+  name     = uuid()
+
   mounts {
-      target = "/var/run/docker.sock"
-      source = "/var/run/docker.sock"
-      type = "bind"
+    target = "/var/run/docker.sock"
+    source = "/var/run/docker.sock"
+    type   = "bind"
   }
 
   provisioner "local-exec" {
     command = "docker exec $ID gitlab-runner register --non-interactive --url https://gitlab.com --registration-token $TOKEN --name $NAME --executor docker --docker-image alpine:latest --docker-privileged --docker-volumes \"/certs/client\""
     environment = {
-      ID =  self.id
+      ID    = self.id
       TOKEN = each.key
-      NAME = self.name
+      NAME  = self.name
     }
   }
 
   provisioner "local-exec" {
-    when = destroy
+    when    = destroy
     command = "docker exec $ID gitlab-runner unregister --all-runners"
     environment = {
-        ID = self.id
+      ID = self.id
     }
   }
 
   provisioner "local-exec" {
-      command = "docker exec $ID sed -i 's/concurrent = 1/concurrent = 4/g' /etc/gitlab-runner/config.toml"
-      environment = {
-          ID = self.id
-      }
+    command = "docker exec $ID sed -i 's/concurrent = 1/concurrent = 4/g' /etc/gitlab-runner/config.toml"
+    environment = {
+      ID = self.id
+    }
   }
 }
 
