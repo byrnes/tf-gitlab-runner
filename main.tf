@@ -45,7 +45,7 @@ resource "docker_container" "runner" {
   }
 
   provisioner "local-exec" {
-    command = "docker exec $ID sed -i 's/concurrent = 1/concurrent = 4/g' /etc/gitlab-runner/config.toml"
+    command = "docker exec $ID sed -i 's/concurrent = 1/concurrent = 10/g' /etc/gitlab-runner/config.toml"
     environment = {
       ID = self.id
     }
