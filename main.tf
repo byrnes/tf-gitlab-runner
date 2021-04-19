@@ -19,7 +19,7 @@ provider "docker" {
 resource "docker_container" "runner" {
   for_each = var.registration_tokens
   image    = docker_image.gitlab-runner.latest
-  name     = uuid()
+  name     = "connor-runner-${uuid()}"
 
   mounts {
     target = "/var/run/docker.sock"
